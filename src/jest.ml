@@ -1,46 +1,48 @@
 type 'a modifier = [
-| `Just of 'a
-| `Not of 'a
+  | `Just of 'a
+  | `Not of 'a
 ]
 
 let mapMod f = function
-| `Just a -> `Just (f a)
-| `Not a -> `Not (f a)
-  
+  | `Just a -> `Just (f a)
+  | `Not a -> `Not (f a)
+
 type assertion =
-| Ok : assertion
-| Fail : string -> assertion
+  | Ok : assertion
+  | Fail : string -> assertion
 
-| ArrayContains : ('a array * 'a) modifier -> assertion
-| ArrayLength : ('a array * int) modifier -> assertion
-| ArraySuperset : ('a array * 'a array) modifier -> assertion
-| Be : ('a * 'a) modifier -> assertion
-| Equal : ('a * 'a) modifier -> assertion
-| FloatCloseTo : (float * float * int option) modifier -> assertion
-| GreaterThan : ('a * 'a) modifier -> assertion
-| GreaterThanOrEqual : ('a * 'a) modifier -> assertion
-| LessThan : ('a * 'a) modifier -> assertion
-| LessThanOrEqual : ('a * 'a) modifier -> assertion
-| StringContains : (string * string) modifier -> assertion
-| StringMatch : (string * Js.Re.t) modifier -> assertion
+  | ArrayContains : ('a array * 'a) modifier -> assertion
+  | ArrayLength : ('a array * int) modifier -> assertion
+  | ArraySuperset : ('a array * 'a array) modifier -> assertion
+  | Be : ('a * 'a) modifier -> assertion
+  | Equal : ('a * 'a) modifier -> assertion
+  | FloatCloseTo : (float * float * int option) modifier -> assertion
+  | GreaterThan : ('a * 'a) modifier -> assertion
+  | GreaterThanOrEqual : ('a * 'a) modifier -> assertion
+  | LessThan : ('a * 'a) modifier -> assertion
+  | LessThanOrEqual : ('a * 'a) modifier -> assertion
+  | StringContains : (string * string) modifier -> assertion
+  | StringMatch : (string * Js.Re.t) modifier -> assertion
 
-| Throws : (unit -> _) modifier -> assertion
-| ThrowsException : ((unit -> _) * exn) modifier -> assertion
-| ThrowsMessage : ((unit -> _) * string) modifier -> assertion
-| ThrowsMessageRe : ((unit -> _) * Js.Re.t) modifier -> assertion
+  | Throws : (unit -> _) modifier -> assertion
+  | ThrowsException : ((unit -> _) * exn) modifier -> assertion
+  | ThrowsMessage : ((unit -> _) * string) modifier -> assertion
+  | ThrowsMessageRe : ((unit -> _) * Js.Re.t) modifier -> assertion
 
-| MatchSnapshot : _ -> assertion
-| MatchSnapshotName : _ * string -> assertion
-| ThrowsMatchSnapshot : (unit -> _) -> assertion
+  | MatchSnapshot : _ -> assertion
+  | MatchSnapshotName : _ * string -> assertion
+  | ThrowsMatchSnapshot : (unit -> _) -> assertion
 
-(* JS *)
-| Defined : ('a Js.undefined) modifier -> assertion
-| Falsy : 'a modifier -> assertion
-| Null : _ Js.null modifier -> assertion
-| Truthy : 'a modifier -> assertion
-| Undefined : 'a Js.undefined modifier -> assertion
-| ObjectContains : (< .. > Js.t * string array) modifier -> assertion
-| ObjectMatch : (< .. > Js.t * < .. > Js.t) modifier -> assertion
+  | MatchScreenshot : _ -> assertion
+
+  (* JS *)
+  | Defined : ('a Js.undefined) modifier -> assertion
+  | Falsy : 'a modifier -> assertion
+  | Null : _ Js.null modifier -> assertion
+  | Truthy : 'a modifier -> assertion
+  | Undefined : 'a Js.undefined modifier -> assertion
+  | ObjectContains : (< .. > Js.t * string array) modifier -> assertion
+  | ObjectMatch : (< .. > Js.t * < .. > Js.t) modifier -> assertion
 
 module type Asserter = sig
   type 'a t
@@ -70,62 +72,64 @@ end = struct
   |}]
 
   let affirm = function
-  | Ok -> ()
-  | Fail message -> fail message
+    | Ok -> ()
+    | Fail message -> fail message
 
-  | ArrayContains `Just (a, b) -> (expect a) ## toContain b
-  | ArrayContains `Not (a, b) -> (expect a) ## not ## toContain b
-  | ArrayLength `Just (a, l) -> (expect a) ## toHaveLength l
-  | ArrayLength `Not (a, l) -> (expect a) ## not ## toHaveLength l
-  | ArraySuperset `Just (a, b) -> (expect a) ## toEqual (arrayContaining b)
-  | ArraySuperset `Not (a, b) -> (expect a) ## not ## toEqual (arrayContaining b)
-  | Be `Just (a, b) -> (expect a) ## toBe b
-  | Be `Not (a, b) -> (expect a) ## not ## toBe b
-  | Equal `Just (a, b) -> (expect a) ## toEqual b
-  | Equal `Not (a, b) -> (expect a) ## not ## toEqual b
-  | FloatCloseTo `Just (a, b, p) -> (expect a) ## toBeCloseTo b (Js.Undefined.fromOption p)
-  | FloatCloseTo `Not (a, b, p) -> (expect a) ## not ## toBeCloseTo b (Js.Undefined.fromOption p)
-  | GreaterThan `Just (a, b) -> (expect a) ## toBeGreaterThan b
-  | GreaterThan `Not (a, b) -> (expect a) ## not ## toBeGreaterThan b
-  | GreaterThanOrEqual `Just (a, b) -> (expect a) ## toBeGreaterThanOrEqual b
-  | GreaterThanOrEqual `Not (a, b) -> (expect a) ## not ## toBeGreaterThanOrEqual b
-  | LessThan `Just (a, b) -> (expect a) ## toBeLessThan b
-  | LessThan `Not (a, b) -> (expect a) ## not ## toBeLessThan b
-  | LessThanOrEqual `Just (a, b) -> (expect a) ## toBeLessThanOrEqual b
-  | LessThanOrEqual `Not (a, b) -> (expect a) ## not ## toBeLessThanOrEqual b
-  | StringMatch `Just (s, re) -> (expect s) ## toMatch re
-  | StringMatch `Not (s, re) -> (expect s) ## not ## toMatch re
-  | StringContains `Just (a, b) -> (expect a) ## toEqual (stringContaining b)
-  | StringContains `Not (a, b) -> (expect a) ## not ## toEqual (stringContaining b)
+    | ArrayContains `Just (a, b) -> (expect a) ## toContain b
+    | ArrayContains `Not (a, b) -> (expect a) ## not ## toContain b
+    | ArrayLength `Just (a, l) -> (expect a) ## toHaveLength l
+    | ArrayLength `Not (a, l) -> (expect a) ## not ## toHaveLength l
+    | ArraySuperset `Just (a, b) -> (expect a) ## toEqual (arrayContaining b)
+    | ArraySuperset `Not (a, b) -> (expect a) ## not ## toEqual (arrayContaining b)
+    | Be `Just (a, b) -> (expect a) ## toBe b
+    | Be `Not (a, b) -> (expect a) ## not ## toBe b
+    | Equal `Just (a, b) -> (expect a) ## toEqual b
+    | Equal `Not (a, b) -> (expect a) ## not ## toEqual b
+    | FloatCloseTo `Just (a, b, p) -> (expect a) ## toBeCloseTo b (Js.Undefined.fromOption p)
+    | FloatCloseTo `Not (a, b, p) -> (expect a) ## not ## toBeCloseTo b (Js.Undefined.fromOption p)
+    | GreaterThan `Just (a, b) -> (expect a) ## toBeGreaterThan b
+    | GreaterThan `Not (a, b) -> (expect a) ## not ## toBeGreaterThan b
+    | GreaterThanOrEqual `Just (a, b) -> (expect a) ## toBeGreaterThanOrEqual b
+    | GreaterThanOrEqual `Not (a, b) -> (expect a) ## not ## toBeGreaterThanOrEqual b
+    | LessThan `Just (a, b) -> (expect a) ## toBeLessThan b
+    | LessThan `Not (a, b) -> (expect a) ## not ## toBeLessThan b
+    | LessThanOrEqual `Just (a, b) -> (expect a) ## toBeLessThanOrEqual b
+    | LessThanOrEqual `Not (a, b) -> (expect a) ## not ## toBeLessThanOrEqual b
+    | StringMatch `Just (s, re) -> (expect s) ## toMatch re
+    | StringMatch `Not (s, re) -> (expect s) ## not ## toMatch re
+    | StringContains `Just (a, b) -> (expect a) ## toEqual (stringContaining b)
+    | StringContains `Not (a, b) -> (expect a) ## not ## toEqual (stringContaining b)
 
-  | Throws `Just f -> (expect f) ## toThrow ()
-  | Throws `Not f -> (expect f) ## not ## toThrow ()
-  | ThrowsException `Just (f, e) -> (expect f) ## toThrow (Js.String.make e)
-  | ThrowsException `Not (f, e) -> (expect f) ## not ## toThrow (Js.String.make e)
-  | ThrowsMessage `Just (f, msg) -> (expect f) ## toThrow msg
-  | ThrowsMessage `Not (f, msg) -> (expect f) ## not ## toThrow msg
-  | ThrowsMessageRe `Just (f, re) -> (expect f) ## toThrow re
-  | ThrowsMessageRe `Not (f, re) -> (expect f) ## not ## toThrow re
+    | Throws `Just f -> (expect f) ## toThrow ()
+    | Throws `Not f -> (expect f) ## not ## toThrow ()
+    | ThrowsException `Just (f, e) -> (expect f) ## toThrow (Js.String.make e)
+    | ThrowsException `Not (f, e) -> (expect f) ## not ## toThrow (Js.String.make e)
+    | ThrowsMessage `Just (f, msg) -> (expect f) ## toThrow msg
+    | ThrowsMessage `Not (f, msg) -> (expect f) ## not ## toThrow msg
+    | ThrowsMessageRe `Just (f, re) -> (expect f) ## toThrow re
+    | ThrowsMessageRe `Not (f, re) -> (expect f) ## not ## toThrow re
 
-  | MatchSnapshot a -> (expect a) ## toMatchSnapshot ()
-  | MatchSnapshotName (a, name) -> (expect a) ## toMatchSnapshot name
-  | ThrowsMatchSnapshot f -> (expect f) ## toThrowErrorMatchingSnapshot ()
+    | MatchSnapshot a -> (expect a) ## toMatchSnapshot ()
+    | MatchSnapshotName (a, name) -> (expect a) ## toMatchSnapshot name
+    | ThrowsMatchSnapshot f -> (expect f) ## toThrowErrorMatchingSnapshot ()
 
-  (* JS *)
-  | Defined `Just a -> (expect a) ## toBeDefined ()
-  | Defined `Not a -> (expect a) ## not ## toBeDefined ()
-  | Falsy `Just a -> (expect a) ## toBeFalsy ()
-  | Falsy `Not a -> (expect a) ## not ## toBeFalsy ()
-  | Null `Just a -> (expect a) ## toBeNull ()
-  | Null `Not a -> (expect a) ## not ## toBeNull ()
-  | Truthy `Just a -> (expect a) ## toBeTruthy ()
-  | Truthy `Not a -> (expect a) ## not ## toBeTruthy ()
-  | Undefined `Just a -> (expect a) ## toBeUndefined ()
-  | Undefined `Not a -> (expect a) ## not ## toBeUndefined ()
-  | ObjectContains `Just (a, props) -> (expect a) ## toEqual (objectContaining props)
-  | ObjectContains `Not (a, props) -> (expect a) ## not ## toEqual (objectContaining props)
-  | ObjectMatch `Just (a, b) -> (expect a) ## toMatchObject b
-  | ObjectMatch `Not (a, b) -> (expect a) ## not ## toMatchObject b
+    | MatchScreenshot a -> (expect a) ## toMatchImageSnapshot ()
+
+    (* JS *)
+    | Defined `Just a -> (expect a) ## toBeDefined ()
+    | Defined `Not a -> (expect a) ## not ## toBeDefined ()
+    | Falsy `Just a -> (expect a) ## toBeFalsy ()
+    | Falsy `Not a -> (expect a) ## not ## toBeFalsy ()
+    | Null `Just a -> (expect a) ## toBeNull ()
+    | Null `Not a -> (expect a) ## not ## toBeNull ()
+    | Truthy `Just a -> (expect a) ## toBeTruthy ()
+    | Truthy `Not a -> (expect a) ## not ## toBeTruthy ()
+    | Undefined `Just a -> (expect a) ## toBeUndefined ()
+    | Undefined `Not a -> (expect a) ## not ## toBeUndefined ()
+    | ObjectContains `Just (a, props) -> (expect a) ## toEqual (objectContaining props)
+    | ObjectContains `Not (a, props) -> (expect a) ## not ## toEqual (objectContaining props)
+    | ObjectMatch `Just (a, b) -> (expect a) ## toMatchObject b
+    | ObjectMatch `Not (a, b) -> (expect a) ## not ## toMatchObject b
 end
 
 module Runner (A : Asserter) = struct
@@ -136,28 +140,28 @@ module Runner (A : Asserter) = struct
 
   let test name callback =
     _test name (fun () ->
-      affirm @@ callback ();
-      Js.undefined)
-      
+        affirm @@ callback ();
+        Js.undefined)
+
   let testAsync ?timeout name callback =
     _testAsync name (fun finish ->
-      callback (fun case ->
-        affirm case;
-        finish ());
-      Js.undefined)
+        callback (fun case ->
+            affirm case;
+            finish ());
+        Js.undefined)
       (Js.Undefined.fromOption timeout)
 
   let testPromise ?timeout name callback =
     _testPromise name (fun () ->
-      callback () |> Js.Promise.then_ (fun a -> a |> A.affirm |> Js.Promise.resolve))
+        callback () |> Js.Promise.then_ (fun a -> a |> A.affirm |> Js.Promise.resolve))
       (Js.Undefined.fromOption timeout)
 
   let testAll name inputs callback =
     inputs |> List.iter (fun input ->
-      let name = {j|$name - $input|j} in
-      _test name (fun () ->
-        affirm @@ callback input;
-        Js.undefined))
+        let name = {j|$name - $input|j} in
+        _test name (fun () ->
+            affirm @@ callback input;
+            Js.undefined))
 
   external describe : string -> (unit -> unit) -> unit = "" [@@bs.val]
 
@@ -216,28 +220,28 @@ module Runner (A : Asserter) = struct
 
     let test name callback =
       _test name (fun () ->
-        affirm @@ callback ();
-        Js.undefined)
+          affirm @@ callback ();
+          Js.undefined)
 
     let testAsync ?timeout name callback =
       _testAsync name (fun finish ->
-        callback (fun assertion ->
-          affirm assertion;
-          finish ());
-        Js.undefined)
+          callback (fun assertion ->
+              affirm assertion;
+              finish ());
+          Js.undefined)
         (Js.Undefined.fromOption timeout)
 
     let testPromise ?timeout name callback =
       _testPromise name (fun () ->
-        callback () |> Js.Promise.then_ (fun a -> a |> affirm |> Js.Promise.resolve))
+          callback () |> Js.Promise.then_ (fun a -> a |> affirm |> Js.Promise.resolve))
         (Js.Undefined.fromOption timeout)
 
     let testAll name inputs callback =
       inputs |> List.iter (fun input ->
-        let name = {j|$name - $input|j} in
-        _test name (fun () ->
-          affirm @@ callback input;
-          Js.undefined))
+          let name = {j|$name - $input|j} in
+          _test name (fun () ->
+              affirm @@ callback input;
+              Js.undefined))
 
     external describe : string -> (unit -> unit) -> unit = "describe.only" [@@bs.val]
   end
@@ -270,21 +274,21 @@ module Expect = struct
   type 'a plainPartial = [`Just of 'a]
   type 'a invertedPartial = [`Not of 'a]
   type 'a partial = 'a modifier
-  
+
   let expect a =
     `Just a
 
   let expectFn f a =
     `Just (fun () -> f a)
-  
+
   let toBe b p =
     Be (mapMod (fun a -> (a, b)) p)
 
   (* toHaveBeenCalled* *)
-  
+
   let toBeCloseTo b p =
     FloatCloseTo (mapMod (fun a -> (a, b, None)) p)
-  
+
   let toBeSoCloseTo b ~digits p =
     FloatCloseTo (mapMod (fun a -> (a, b, Some digits)) p)
 
@@ -326,12 +330,15 @@ module Expect = struct
   let toMatchSnapshot (`Just a) =
     MatchSnapshot a
 
+  let toMatchScreenshot (`Just a) =
+    MatchScreenshot a
+
   let toMatchSnapshotWithName name (`Just a) =
     MatchSnapshotName (a, name)
 
   let toThrow f =
     Throws (f :> _ modifier)
-  
+
   let toThrowErrorMatchingSnapshot (`Just f) =
     ThrowsMatchSnapshot f
 
@@ -382,7 +389,7 @@ module MockJs = struct
   (** experimental *)
 
   type ('fn, 'args, 'ret) fn
-  
+
   [%%bs.raw {|
     function makeNewMock(self) {
       return new (Function.prototype.bind.apply(self, arguments));
@@ -395,7 +402,7 @@ module MockJs = struct
   let new1 a self = new1 self a
   external new2 : (('a -> 'b -> 'ret) [@bs], ('a * 'b), 'ret) fn -> 'a -> 'b -> 'ret = "makeNewMock" [@@bs.val]
   let new2 a b self = new2 self a b
-  
+
   external fn : ('fn, _, _) fn -> 'fn = "%identity"
   external calls : (_, 'args, _) fn -> 'args array = "" [@@bs.get] [@@bs.scope "mock"]
   let calls self = Js.Array.copy (calls self) (* Awesome, the bloody things are mutated so we need to copy *)
@@ -404,7 +411,7 @@ module MockJs = struct
   |}] (* there's no such thing as aa 1-ary tuple, so we need to unbox single-element arrays *)
   external instances : (_, _, 'ret) fn -> 'ret array = "" [@@bs.get] [@@bs.scope "mock"] (* TODO: semms this only records "instances" created by `new` *)
   let instances self = Js.Array.copy (instances self) (* Awesome, the bloody things are mutated so we need to copy *)
-  
+
   (** Beware: this actually replaces `mock`, not just `mock.instances` and `mock.calls` *)
   external mockClear : unit = "" [@@bs.send.pipe: _ fn]
   external mockReset : unit = "" [@@bs.send.pipe: _ fn]
@@ -437,18 +444,18 @@ module JestJs = struct
   external fn : ('a -> 'b) -> ('a -> 'b, 'a, 'b) MockJs.fn = "jest.fn" [@@bs.val]
   external fn2 : ('a -> 'b -> 'c [@bs]) -> (('a -> 'b -> 'c [@bs]), 'a * 'b, 'c) MockJs.fn = "jest.fn" [@@bs.val]
   (* TODO
-  external fn3 : ('a -> 'b -> 'c -> 'd) -> ('a * 'b * 'c) MockJs.fn = "jest.fn" [@@bs.val]
-  external fn4 : ('a -> 'b -> 'c -> 'd -> 'e) -> ('a * 'b * 'c * 'd) MockJs.fn = "jest.fn" [@@bs.val]
-  external fn5 : ('a -> 'b -> 'c -> 'd -> 'e -> 'f) -> ('a * 'a * 'c * 'd * 'e) MockJs.fn = "jest.fn" [@@bs.val]
-  external fn6 : ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g) -> ('a * 'b * 'c * 'd * 'e * 'f) MockJs.fn = "jest.fn" [@@bs.val]
+     external fn3 : ('a -> 'b -> 'c -> 'd) -> ('a * 'b * 'c) MockJs.fn = "jest.fn" [@@bs.val]
+     external fn4 : ('a -> 'b -> 'c -> 'd -> 'e) -> ('a * 'b * 'c * 'd) MockJs.fn = "jest.fn" [@@bs.val]
+     external fn5 : ('a -> 'b -> 'c -> 'd -> 'e -> 'f) -> ('a * 'a * 'c * 'd * 'e) MockJs.fn = "jest.fn" [@@bs.val]
+     external fn6 : ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g) -> ('a * 'b * 'c * 'd * 'e * 'f) MockJs.fn = "jest.fn" [@@bs.val]
   *)
   (* external isMockFunction : MockJs.fn -> Js.boolean = "jest.isMockFunction" [@@bs.val] *) (* pointless with types? *)
   external mock : string -> unit = "jest.mock" [@@bs.val]
   external mockWithFactory : string -> (unit -> 'a) ->unit = "jest.mock" [@@bs.val]
   external mockVirtual : string -> (unit -> 'a) -> < .. > Js.t -> unit = "jest.mock" [@@bs.val]
   (* TODO If this is merely defined, babel-plugin-jest-hoist fails with "The second argument of `jest.mock` must be a function." Silly thing.
-  let mockVirtual : string -> (unit -> 'a) -> unit =
-    fun moduleName factory -> mockVirtual moduleName factory [%bs.obj { _virtual = Js.true_ }]
+     let mockVirtual : string -> (unit -> 'a) -> unit =
+     fun moduleName factory -> mockVirtual moduleName factory [%bs.obj { _virtual = Js.true_ }]
   *)
   external clearAllMocks : unit -> unit = "jest.clearAllMocks" [@@bs.val]
   external resetAllMocks : unit -> unit = "jest.resetAllMocks" [@@bs.val]

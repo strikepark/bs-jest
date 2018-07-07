@@ -89,7 +89,7 @@ module Expect : sig
     | 'a plainPartial
     | 'a invertedPartial
   ]
-  
+
   val expect : 'a -> 'a plainPartial
   val expectFn : ('a -> 'b) -> 'a -> (unit -> 'b) plainPartial (* EXPERIMENTAL *)
 
@@ -109,6 +109,7 @@ module Expect : sig
   val toMatchRe : Js.Re.t -> [< string partial] -> assertion
   val toMatchSnapshot : _ plainPartial -> assertion
   val toMatchSnapshotWithName : string -> _ plainPartial -> assertion
+  val toMatchScreenshot : _ plainPartial -> assertion
   val toThrow : [< (unit -> _) partial] -> assertion
   val toThrowErrorMatchingSnapshot : (unit -> _) plainPartial -> assertion
   val toThrowException : exn -> [< (unit -> _) partial] -> assertion
@@ -150,19 +151,19 @@ module MockJs : sig
   val new0 : (unit -> 'ret, unit, 'ret) fn -> 'ret
   val new1 : 'a -> ('a -> 'ret, 'a, 'ret) fn -> 'ret
   val new2 : 'a -> 'b -> (('a -> 'b -> 'ret) [@bs], 'a * 'b, 'ret) fn -> 'ret
-  
+
   external fn : ('fn, _, _) fn -> 'fn = "%identity"
   val calls : (_, 'args, _) fn -> 'args array
   val instances : (_, _, 'ret) fn -> 'ret array
-  
+
   (** Beware: this actually replaces `mock`, not just `mock.instances` and `mock.calls` *)
   external mockClear : unit = "" [@@bs.send.pipe: _ fn]
-  external mockReset : unit = "" [@@bs.send.pipe: _ fn]
-  external mockImplementation : 'fn -> 'self = "" [@@bs.send.pipe: ('fn, _, _) fn as 'self]
-  external mockImplementationOnce : 'fn -> 'self = "" [@@bs.send.pipe: ('fn, _, _) fn as 'self]
-  external mockReturnThis : unit = "" [@@bs.send.pipe: (_, _, 'ret) fn] (* not type safe, we don't know what `this` actually is *)
-  external mockReturnValue : 'ret -> 'self = "" [@@bs.send.pipe: (_, _, 'ret) fn as 'self]
-  external mockReturnValueOnce : 'ret -> 'self = "" [@@bs.send.pipe: (_, _, 'ret) fn as 'self]
+external mockReset : unit = "" [@@bs.send.pipe: _ fn]
+external mockImplementation : 'fn -> 'self = "" [@@bs.send.pipe: ('fn, _, _) fn as 'self]
+external mockImplementationOnce : 'fn -> 'self = "" [@@bs.send.pipe: ('fn, _, _) fn as 'self]
+external mockReturnThis : unit = "" [@@bs.send.pipe: (_, _, 'ret) fn] (* not type safe, we don't know what `this` actually is *)
+external mockReturnValue : 'ret -> 'self = "" [@@bs.send.pipe: (_, _, 'ret) fn as 'self]
+external mockReturnValueOnce : 'ret -> 'self = "" [@@bs.send.pipe: (_, _, 'ret) fn as 'self]
 end
 
 module Jest : sig
