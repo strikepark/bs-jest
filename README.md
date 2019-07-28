@@ -76,7 +76,7 @@ Then add `__tests__` to `sources` in your `bsconfig.json`:
 
 Put tests in a `__tests__` directory and use the suffix `*test.ml`/`*test.re` (Make sure to use valid module names. e.g. `<name>_test.re` is valid while `<name>.test.re` is not). When compiled they will be put in a `__tests__` directory under `lib`, with a `*test.js` suffix, ready to be picked up when you run `jest`. If you're not already familiar with [Jest](https://github.com/facebook/jest), see [the Jest documentation](https://facebook.github.io/jest/).
 
-One very important difference from Jest is that assertions are not imperative. That is, `expect(1 + 2) |> toBe(3)`, for example, will not "execute" the assertion then and there. It will instead return an `assertion` value which must be returned from the test function. Only after the test function has completed will the returned assertion be checked. Any other assertions will be ignored, but unless you explicitly ignore them, it will produce compiler warnings about unused values. This means there can be at most one assertion per test. But it also means there must be at least one assertion per test. You can't forget an assertion in a branch, and think the test passes when in fact it doesn't even test anything. It will also force you to write simple tests that are easy to understand and refactor, and will give you more information about what's wrong when something does go wrong.
+One very important difference from Jest is that assertions are not imperative. That is, `expect(1 + 2) |> toBe(3)`, for example, will not "execute" the assertion then and there. It will instead return an `assertion` value which must be returned from the test function. Only after the test function has completed will the returned assertion be checked. Any other assertions will be ignored, but unless you explicitly ignore them, it will produce compiler warnings about unused values. **This means there can be at most one assertion per test**. But it also means there must be at least one assertion per test. You can't forget an assertion in a branch, and think the test passes when in fact it doesn't even test anything. It will also force you to write simple tests that are easy to understand and refactor, and will give you more information about what's wrong when something does go wrong.
 
 At first sight this may still seem very limiting, and if you write very imperative code it really is, but I'd argue the real problem then is the imperative code. There are however some workarounds that can alleviate this:
 
@@ -90,6 +90,10 @@ At first sight this may still seem very limiting, and if you write very imperati
 
 For the moment, please refer to [Jest.mli](https://github.com/glennsl/bs-jest/blob/master/src/jest.mli).
 
+## Extensions
+
+* [bs-jest-dom](https://redex.github.io/package/bs-jest-dom/) - Custom matchers to test the state of the DOM
+
 ## Contribute
 ```sh
 git clone https://github.com/glennsl/bs-jest.git
@@ -100,6 +104,24 @@ npm install
 Then build and run tests with `npm test`, start watchers for `bsb`and `jest` with `npm run watch:bsb` and `npm run watch:jest` respectively. Install `screen` to be able to use `npm run watch:screen` to run both watchers in a single terminal window.
 
 ## Changes
+
+### 0.4.8
+* Updated jest to 24.3.1
+* Fixed jest warnings not to return anything from `describe` callbacks by explicitly returning `undefined` (otherwise BuckleScript will return something else like `()`, which is represented as `0`)
+* Fixed several newly uncovered uncurrying issues caused by surprise breaking changes in BuckleScript (Thanks again, Bob!)
+* Added `Jest.advanceTimersByTime`, which is basically just an alias of `Jest.runTimersToTime`
+
+### 0.4.7
+* Added `Expect.not__` for transitional compatibility with Reason syntax change of "unkeywording" `not` by mangling it into `not_`, and `not_` into `not__` and so on.
+
+### 0.4.6
+* Made uncurrying explicit for `afterAllPromise` too.
+
+### 0.4.5
+* Made uncurrying explicit to fix a breaking change in implicit uncurrying from `bs-platform` 4.0.7 (Thanks Bob!)
+
+### 0.4.3
+* Removed some optimizations on skipped tests that Jest 23 suddenly started objecting to (#30)
 
 ### 0.4.0
 * Added `MockJs.new0`, `new1` and `new2`

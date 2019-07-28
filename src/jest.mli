@@ -7,76 +7,76 @@ end
 
 module Runner (A : Asserter) : sig
   val test : string -> (unit -> _ A.t) -> unit
-  val testAsync : ?timeout:int -> string -> ((_ A.t -> unit) -> unit) -> unit
-  val testPromise : ?timeout:int -> string -> (unit -> _ A.t Js.Promise.t) -> unit
+  val testAsync : string -> ?timeout:int -> ((_ A.t -> unit) -> unit) -> unit
+  val testPromise : string -> ?timeout:int -> (unit -> _ A.t Js.Promise.t) -> unit
   val testAll : string -> 'a list -> ('a -> _ A.t) -> unit
 
-  external describe : string -> (unit -> unit) -> unit = "" [@@bs.val]
+  val describe : string -> (unit -> unit) -> unit
 
-  external beforeAll : (unit -> unit) -> unit = "" [@@bs.val]
+  external beforeAll : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
   val beforeAllAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
   val beforeAllPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-  external beforeEach : (unit -> unit) -> unit = "" [@@bs.val]
+  external beforeEach : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
   val beforeEachAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
   val beforeEachPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-  external afterAll : (unit -> unit) -> unit = "" [@@bs.val]
+  external afterAll : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
   val afterAllAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
   val afterAllPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-  external afterEach : (unit -> unit) -> unit = "" [@@bs.val]
+  external afterEach : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
   val afterEachAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
   val afterEachPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
 
   module Only : sig
     val test : string -> (unit -> _ A.t) -> unit
-    val testAsync : ?timeout:int -> string -> ((_ A.t -> unit) -> unit) -> unit
-    val testPromise : ?timeout:int -> string -> (unit -> _ A.t Js.Promise.t) -> unit
+    val testAsync : string -> ?timeout:int -> ((_ A.t -> unit) -> unit) -> unit
+    val testPromise : string -> ?timeout:int -> (unit -> _ A.t Js.Promise.t) -> unit
     val testAll : string -> 'a list -> ('a -> _ A.t) -> unit
-    external describe : string -> (unit -> unit) -> unit = "describe.only" [@@bs.val]
+    val describe : string -> (unit -> unit) -> unit
   end
 
   module Skip : sig
-    external test : string -> (unit -> _ A.t) -> unit = "it.skip" [@@bs.val]
-    external testAsync : ?timeout:int -> string -> ((_ A.t -> unit) -> unit) -> unit = "it.skip" [@@bs.val]
-    external testPromise : ?timeout:int -> string -> (unit -> _ A.t Js.Promise.t) -> unit = "it.skip" [@@bs.val]
+    val test : string -> (unit -> _ A.t) -> unit
+    val testAsync : string -> ?timeout:int -> ((_ A.t -> unit) -> unit) -> unit
+    val testPromise : string -> ?timeout:int -> (unit -> _ A.t Js.Promise.t) -> unit
     val testAll : string -> 'a list -> ('a -> _ A.t) -> unit
-    external describe : string -> (unit -> unit) -> unit = "describe.skip" [@@bs.val]
+    val describe : string -> (unit -> unit) -> unit
   end
 end
 
 val test : string -> (unit -> assertion) -> unit
-val testAsync : ?timeout:int -> string -> ((assertion -> unit) -> unit) -> unit
-val testPromise : ?timeout:int -> string -> (unit -> assertion Js.Promise.t) -> unit
+val testAsync : string -> ?timeout:int -> ((assertion -> unit) -> unit) -> unit
+val testPromise : string -> ?timeout:int -> (unit -> assertion Js.Promise.t) -> unit
 val testAll : string -> 'a list -> ('a -> assertion) -> unit
 
-external describe : string -> (unit -> unit) -> unit = "" [@@bs.val]
+val describe : string -> (unit -> unit) -> unit
 
-external beforeAll : (unit -> unit) -> unit = "" [@@bs.val]
+external beforeAll : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
 val beforeAllAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
 val beforeAllPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-external beforeEach : (unit -> unit) -> unit = "" [@@bs.val]
+external beforeEach : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
 val beforeEachAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
 val beforeEachPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-external afterAll : (unit -> unit) -> unit = "" [@@bs.val]
+external afterAll : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
 val afterAllAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
 val afterAllPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
-external afterEach : (unit -> unit) -> unit = "" [@@bs.val]
+external afterEach : (unit -> unit [@bs.uncurry]) -> unit = "" [@@bs.val]
 val afterEachAsync : ?timeout:int -> ((unit -> unit) -> unit) -> unit
 val afterEachPromise : ?timeout:int -> (unit -> 'a Js.Promise.t) -> unit
 
 module Only : sig
   val test : string -> (unit -> assertion) -> unit
-  val testAsync : ?timeout:int -> string -> ((assertion -> unit) -> unit) -> unit
-  val testPromise : ?timeout:int -> string -> (unit -> assertion Js.Promise.t) -> unit
+  val testAsync : string -> ?timeout:int -> ((assertion -> unit) -> unit) -> unit
+  val testPromise : string -> ?timeout:int -> (unit -> assertion Js.Promise.t) -> unit
   val testAll : string -> 'a list -> ('a -> assertion) -> unit
-  external describe : string -> (unit -> unit) -> unit = "describe.only" [@@bs.val]
+  val describe : string -> (unit -> unit) -> unit
 end
 
 module Skip : sig
-  external test : string -> (unit -> assertion) -> unit = "it.skip" [@@bs.val]
-  external testAsync : ?timeout:int -> string -> ((assertion -> unit) -> unit) -> unit = "it.skip" [@@bs.val]
-  external testPromise : ?timeout:int -> string -> (unit -> assertion Js.Promise.t) -> unit = "it.skip" [@@bs.val]
-  external testAll : string -> 'a list -> ('a -> assertion) -> unit = "it.skip" [@@bs.val]
-  external describe : string -> (unit -> unit) -> unit = "describe.skip" [@@bs.val]
+  val test : string -> (unit -> assertion) -> unit
+  val testAsync : string -> ?timeout:int -> ((assertion -> unit) -> unit) -> unit
+  val testPromise : string -> ?timeout:int -> (unit -> assertion Js.Promise.t) -> unit
+  val testAll : string -> 'a list -> ('a -> assertion) -> unit
+  val describe : string -> (unit -> unit) -> unit
 end
 
 val pass : assertion
@@ -115,7 +115,9 @@ module Expect : sig
   val toThrowException : exn -> [< (unit -> _) partial] -> assertion
   val toThrowMessage : string -> [< (unit -> _) partial] -> assertion
   val toThrowMessageRe : Js.Re.t -> [< (unit -> _) partial] -> assertion
+
   val not_ : 'a plainPartial -> 'a invertedPartial
+  val not__ : 'a plainPartial -> 'a invertedPartial
 
   module Operators : sig
     (** experimental *)
@@ -172,6 +174,7 @@ module Jest : sig
   external runAllTimers : unit -> unit = "jest.runAllTimers" [@@bs.val]
   external runAllImmediates : unit -> unit = "jest.runAllImmediates" [@@bs.val]
   external runTimersToTime : int -> unit = "jest.runTimersToTime" [@@bs.val]
+  external advanceTimersByTime : int -> unit = "jest.advanceTimersByTime" [@@bs.val]
   external runOnlyPendingTimers : unit -> unit = "jest.runOnlyPendingTimers" [@@bs.val]
   external useFakeTimers : unit -> unit = "jest.useFakeTimers" [@@bs.val]
   external useRealTimers : unit -> unit = "jest.useRealTimers" [@@bs.val]

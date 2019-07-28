@@ -1,6 +1,6 @@
 {
   "name": "@glennsl/bs-jest",
-  "version": "0.4.2",
+  "version": "0.4.8",
   "description": "BuckleScript bindings to the Jest testing framework",
   "scripts": {
     "build": "bsb -make-world",
@@ -32,11 +32,11 @@
     "bsconfig.json"
   ],
   "devDependencies": {
-    "bs-platform": "^2.1.0",
-    "coveralls": "^3.0.0",
-    "nyc": "^11.4.1"
+    "bs-platform": "^5.0.4",
+    "coveralls": "^3.0.3",
+    "nyc": "^13.3.0"
   },
   "dependencies": {
-    "jest": "^22.0.4"
+    "jest": "^24.3.1"
   }
 }
